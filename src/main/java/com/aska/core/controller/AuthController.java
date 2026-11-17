@@ -1,21 +1,17 @@
 package com.aska.core.controller;
 
+import com.aska.core.constants.AppConstants;
 import com.aska.core.dto.LoginRequest;
 import com.aska.core.dto.RegisterRequest;
 import com.aska.core.dto.UserResponse;
-import com.aska.core.model.User;
 import com.aska.core.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -26,7 +22,7 @@ import java.security.Principal;
 public class AuthController {
 
     private final UserService userService;
-    private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
+    private final AuthenticationManager authenticationManager;
 
 
     @PostMapping("/register")
@@ -36,20 +32,16 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public UserResponse login(@Valid @RequestBody LoginRequest request,
-                              HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
-        Authentication authentication = userService.authenticate(request);
+    public ResponseEntity<UserResponse> login(@Valid @RequestBody LoginRequest request) {
 
-        if(httpRequest.getSession(false) != null){
-            httpRequest.changeSessionId();
-        }
+        Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(request.email(), request.password());
+        Authentication authentication = authenticationManager.authenticate(authenticationRequest);
 
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(authentication);
-        SecurityContextHolder.setContext(context);
-        securityContextRepository.saveContext(context,httpRequest,httpResponse);
+        String jwt = userService.generateJwtToken(authentication);
 
-        return UserResponse.from(userService.getByEmail(authentication.getName()));
+        return ResponseEntity.ok()
+                .header(AppConstants.JWT_HEADER, jwt)
+                .body(UserResponse.from(userService.getByEmail(authentication.getName())));
     }
 
     @GetMapping("/me")
