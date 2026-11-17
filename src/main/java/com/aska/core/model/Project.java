@@ -3,30 +3,40 @@ package com.aska.core.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.URL;
 
-@Data
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
+@Getter @Setter
 public class Project extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long projectId;
+    private Long projectId;
 
-    @URL(message = "Please provide a valid URL")
+    @Column(nullable = false, length = 1000)
     private String marketplaceUrl;
 
-    private enum marketplace {
-        WILDBERRIES,
-        OZON
-    }
-    @Size(max = 255, message = "Product name must not exceed 255 characters")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Marketplace marketplace;
+
+    @Column(nullable = false)
     private String productName;
 
+    @Column(length = 1000)
     private String imageUrl;
-    private int currentRating;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id",referencedColumnName = "userId", nullable = true)
+    private double currentRating;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id",referencedColumnName = "userId", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Analysis> analyses = new ArrayList<>();
 }

@@ -1,16 +1,23 @@
 package com.aska.core.service;
 
-import com.aska.core.config.UserDetailsService;
-import com.aska.core.config.UsernamePwdAuthenticationProvider;
+import com.aska.core.dto.LoginRequest;
+import com.aska.core.dto.RegisterRequest;
+import com.aska.core.dto.UserResponse;
+import com.aska.core.model.Authority;
 import com.aska.core.model.User;
 import com.aska.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -21,25 +28,38 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
 
     @Transactional
-    public User register(User user) {
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Email already exists");
-        }
+    public User register(RegisterRequest request) {
+        String email = normalize(request.email());
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setActive(true);
+        if (userRepository.existsByEmail(email)) {
+           throw new ResponseStatusException(HttpStatus.CONFLICT, "");
+        }
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(request.password()));
+        user.setName(request.name().trim());
+
+        Authority authority = new Authority();
+        authority.setName("ROLE_USER");
+        authority.setUser(user);
+        user.getAuthorities().add(authority);
 
         return userRepository.save(user);
     }
 
-    public User login(User user) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
-        );
-
-        String email = authentication.getName();
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public Authentication authenticate(LoginRequest request) {
+        return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(normalize(request.email()),request.password()));
     }
 
+    @Transactional(readOnly = true)
+    public User getByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Пользователь не найден"));
+    }
+
+    private String normalize(String email) {
+        return email.trim().toLowerCase(Locale.ROOT);
+    }
 }
+
+

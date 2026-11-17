@@ -1,5 +1,8 @@
 package com.aska.core.controller;
 
+import com.aska.core.dto.ProjectRequest;
+import com.aska.core.dto.ProjectResponse;
+import com.aska.core.dto.ProjectUpdateRequest;
 import com.aska.core.model.Project;
 import com.aska.core.repository.ProjectRepository;
 import com.aska.core.service.ProjectService;
@@ -10,45 +13,40 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/projects")
 @RequiredArgsConstructor
 public class ProjectController {
 
     private final ProjectService projectService;
-    private final ProjectRepository projectRepository;
 
-    @GetMapping("/projects")
-    public ResponseEntity<List<Project>> getProjects() {
-        List<Project> projects = projectRepository.findAll();
-        return ResponseEntity.ok(projects);
+    @GetMapping
+    public List<ProjectResponse> list(Principal principal) {
+        return projectService.listProject(principal.getName());
     }
 
-    @PostMapping("/projects")
-    public ResponseEntity<Project> addProject(@Valid @RequestBody Project project) {
-        Project savedProject = projectRepository.save(project);
-        return ResponseEntity.ok(savedProject);
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProjectResponse create(@Valid @RequestBody ProjectRequest request, Principal principal) {
+        return projectService.createProject(request, principal.getName());
     }
 
-    @GetMapping("/projects/{id}")
-    public ResponseEntity<Project> getProject(@PathVariable Long id) {
-        Project project = projectRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found"));
-        return ResponseEntity.ok(project);
+    @GetMapping("/{id}")
+    public ProjectResponse get(@PathVariable Long id, Principal principal) {
+        return projectService.getProject(id,principal.getName());
     }
 
-    @PutMapping("/projects/{id}")
-    public ResponseEntity<Project> updateProject(@PathVariable Long id, @Valid @RequestBody Project project) {
-
-        Project updatedProject = projectService.update(id, project);
-        return ResponseEntity.ok(updatedProject);
+    @PutMapping("/{id}")
+    public ProjectResponse update(@PathVariable Long id, @Valid @RequestBody ProjectUpdateRequest request, Principal principal) {
+        return projectService.updateProject(id,request, principal.getName());
     }
 
-    @DeleteMapping("/projects/{id}")
-    public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
-        projectRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void  delete(@PathVariable Long id, Principal principal) {
+        projectService.deleteProject(id,principal.getName());
     }
-
 }

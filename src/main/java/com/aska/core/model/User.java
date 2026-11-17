@@ -4,40 +4,39 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Set;
 
-@Data
+
 @Entity
+@Getter @Setter
+@Table(name = "users")
 public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long userId;
+    private Long userId;
 
-    @Email(message = "Please provide a valid email address")
+    @Column(unique = true, nullable = false)
     private String email;
 
-    @Size(min = 8, message = "Password must be at least 8 characters long")
-    @Size(max = 20, message = "Password must be at most 20 characters long")
+    @Column(nullable = false)
     private String password;
 
-    @Size(min = 5, message = "Name must be at least 5 characters long")
-    @Size(max = 50, message = "Name must be at most 50 characters long")
     private String name;
 
-    private enum tier {
-        FREE,
-        PRO,
-        VIP
-    }
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Tier tier = Tier.FREE;
 
-    private boolean active;
+    private boolean active = true;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST,
-            fetch = FetchType.LAZY, targetEntity = Project.class)
-    private Set<Project> projects;
+    /*@OneToMany(mappedBy = "user", cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER, targetEntity = Project.class)
+    private Set<Project> projects;*/
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Set<Authority> authorities;
