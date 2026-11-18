@@ -1,20 +1,14 @@
 package com.aska.core.service;
 
 import com.aska.core.constants.AppConstants;
-import com.aska.core.dto.LoginRequest;
 import com.aska.core.dto.RegisterRequest;
-import com.aska.core.dto.UserResponse;
 import com.aska.core.model.Authority;
 import com.aska.core.model.User;
 import com.aska.core.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,15 +28,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
-    private final Environment env;
 
     @Transactional
     public User register(RegisterRequest request) {
         String email = normalize(request.email());
 
         if (userRepository.existsByEmail(email)) {
-           throw new ResponseStatusException(HttpStatus.CONFLICT, "");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User with this email already exists");
         }
         User user = new User();
         user.setEmail(email);
@@ -60,12 +52,11 @@ public class UserService {
     @Transactional(readOnly = true)
     public User getByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Пользователь не найден"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
     }
 
     public String generateJwtToken(Authentication authentication) {
-        String secret = env.getProperty(AppConstants.JWT_SECRET_KEY, AppConstants.JWT_SECRET_KEY_DEFAULT);
-        SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        SecretKey secretKey = Keys.hmacShaKeyFor(AppConstants.JWT_SECRET_KEY.getBytes(StandardCharsets.UTF_8));
         return Jwts.builder()
                 .issuer("Aska")
                 .subject("JWT Token")

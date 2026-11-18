@@ -1,11 +1,8 @@
 package com.aska.core.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.validator.constraints.URL;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -9,7 +9,7 @@ public record RegisterRequest(
         @Email(message = "Invalid email format")
         String email,
         @NotBlank(message = "Password is required")
-        @Size(min = 8, max = 50, message = "Password must be between 8 and 50 characters")
+        @Size(min = 8, max = 50, message = "Password must be between 2 and 50 characters")
         String password,
         @NotBlank(message = "Username is required")
         @Size(min = 2, max = 50, message = "Username must be between 8 and 50 characters")

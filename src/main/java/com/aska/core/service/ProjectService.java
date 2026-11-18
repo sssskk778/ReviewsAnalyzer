@@ -3,24 +3,19 @@ package com.aska.core.service;
 import com.aska.core.dto.ProjectRequest;
 import com.aska.core.dto.ProjectResponse;
 import com.aska.core.dto.ProjectUpdateRequest;
-import com.aska.core.dto.UserResponse;
 import com.aska.core.model.Marketplace;
 import com.aska.core.model.Project;
 import com.aska.core.model.User;
 import com.aska.core.repository.ProjectRepository;
 import com.aska.core.repository.UserRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.security.Principal;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Pattern;
 
 @Service
@@ -36,20 +31,20 @@ public class ProjectService {
     @Transactional(readOnly = true)
     public List<ProjectResponse> listProject(String email){
         List<Project> projects = projectRepository.findByUserEmailOrderByCreatedAtDesc(email);
-        return projects.stream().map(project -> ProjectResponse.from(project)).toList();
+        return projects.stream().map(ProjectResponse::from).toList();
     }
 
     @Transactional
     public ProjectResponse createProject(ProjectRequest request, String email){
         String url = request.marketplaceUrl().trim();
         if(!WILDBERRIES_URL.matcher(url).matches()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ожидается ссылка вида https://www.wildberries.ru/catalog/<номер>/detail.aspx");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Expected URL format: https://www.wildberries.ru/catalog/<number>/detail.aspx");
         }
         if(projectRepository.existsByUserEmailAndMarketplaceUrl(email, url)){
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Этот товар уже есть в вашей коллекции");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "This product is already in your collection");
         }
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Пользователь не найден"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
 
         Project project = new Project();
         project.setUser(user);
@@ -69,7 +64,7 @@ public class ProjectService {
     @Transactional
     public ProjectResponse updateProject(Long id, ProjectUpdateRequest request, String email) {
         Project existingProject = getOwned(id, email);
-        existingProject.setProductName(request.productName());
+        existingProject.setProductName(request.productName().trim());
         existingProject.setImageUrl(isBlank(request.imageUrl()) ? null : request.imageUrl().trim());
         return ProjectResponse.from(projectRepository.save(existingProject));
     }
@@ -81,9 +76,10 @@ public class ProjectService {
     private boolean isBlank(String s) {
         return s == null || s.isBlank();
     }
+
     private Project getOwned(Long id, String email){
         return projectRepository.findByProjectIdAndUserEmail(id, email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ""));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
     }
 
 

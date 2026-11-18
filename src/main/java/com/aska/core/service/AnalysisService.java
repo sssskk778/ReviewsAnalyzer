@@ -11,13 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -35,7 +30,7 @@ public class AnalysisService {
         Project project = getOwnedProject(projectId, email);
 
         if(analysisRepository.existsByProjectProjectIdAndStatusIn(projectId, ACTIVE)){
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Analysis for this product is already in progress");
         }
 
         Analysis analysis = new Analysis();
@@ -57,14 +52,14 @@ public class AnalysisService {
     @Transactional(readOnly = true)
     public AnalysisDetailsResponse detailsAnalysis(Long analysisId, String email){
         Analysis analysis = analysisRepository.findByAnalysisIdAndProjectUserEmail(analysisId, email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, " "));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Analysis for this product not found"));
         return AnalysisDetailsResponse.from(analysis);
     }
 
 
     private Project getOwnedProject(Long projectId, String email) {
         return projectRepository.findByProjectIdAndUserEmail(projectId, email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Товар не найден"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
     }
 
 }

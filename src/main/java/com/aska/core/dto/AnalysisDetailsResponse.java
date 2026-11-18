@@ -37,6 +37,6 @@ public record AnalysisDetailsResponse(
                 analysis.getTotalReviews(), analysis.getAverageRating(), analysis.getPositiveReviews(),
                 analysis.getNeutralReviews(), analysis.getNegativeReviews(), analysis.getSummary(),
                 analysis.getRecommendations(), analysis.getErrorMessage(),
-                analysis.getAspects().stream().map(aspect -> Aspect.from(aspect)).toList());
+                analysis.getAspects().stream().map(Aspect::from).toList());
     }
 }

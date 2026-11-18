@@ -3,15 +3,11 @@ package com.aska.core.controller;
 import com.aska.core.dto.ProjectRequest;
 import com.aska.core.dto.ProjectResponse;
 import com.aska.core.dto.ProjectUpdateRequest;
-import com.aska.core.model.Project;
-import com.aska.core.repository.ProjectRepository;
 import com.aska.core.service.ProjectService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.List;
