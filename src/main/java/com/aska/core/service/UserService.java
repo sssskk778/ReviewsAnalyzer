@@ -73,7 +73,7 @@ public class UserService {
                 .claim("authorities", authentication.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority).collect(Collectors.joining(",")))
                 .issuedAt(new Date())
-                .expiration(new Date(new Date().getTime() + Long.parseLong(env.getProperty("jwt.expiration", String.valueOf(AppConstants.JWT_EXPIRATION_MS)))))
+                .expiration(new Date(new Date().getTime() + AppConstants.JWT_EXPIRATION_MS))
                 .signWith(secretKey)
                 .compact();
     }

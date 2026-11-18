@@ -22,14 +22,14 @@ public class AnalysisController {
     private final AnalysisService analysisService;
 
     //запуск анализа
-    @PostMapping("/project/{projectId}/analyses")
+    @PostMapping("/projects/{projectId}/analyses")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public AnalysisResponse create(@PathVariable Long projectId, Principal principal) {
         return analysisService.createAnalysis(projectId, principal.getName());
     }
 
     // история анализов
-    @GetMapping("/project/{projectId}/analyses")
+    @GetMapping("/projects/{projectId}/analyses")
     public List<AnalysisResponse> list(@PathVariable Long projectId, Principal principal) {
         return analysisService.listAnalysis(projectId, principal.getName());
     }

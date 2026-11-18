@@ -3,6 +3,7 @@ package com.aska.core.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -22,8 +23,11 @@ public class AppAuthenticationProvider implements AuthenticationProvider {
         String username = authentication.getName();
         String pwd = authentication.getCredentials().toString();
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        if(!userDetails.isEnabled()){
+            throw new DisabledException("Account is disabled");
+        }
         if(passwordEncoder.matches(pwd, userDetails.getPassword())){
-            return new UsernamePasswordAuthenticationToken(username,pwd, userDetails.getAuthorities());
+            return new UsernamePasswordAuthenticationToken(userDetails.getUsername(),pwd, userDetails.getAuthorities());
         }else {
             throw new BadCredentialsException("Invalid Password");
         }

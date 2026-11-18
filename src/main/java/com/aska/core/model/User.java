@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -38,7 +39,7 @@ public class User extends BaseEntity {
             fetch = FetchType.EAGER, targetEntity = Project.class)
     private Set<Project> projects;*/
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private Set<Authority> authorities;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Authority> authorities = new HashSet<>();
 
 }

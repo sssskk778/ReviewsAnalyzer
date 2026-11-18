@@ -1,0 +1,12 @@
+C:\Users\acer\IdeaProjects\aska\src\main\java\com\aska\core\config\SecurityConfig.java
+C:\Users\acer\IdeaProjects\aska\src\main\java\com\aska\core\controller\AuthController.java
+C:\Users\acer\IdeaProjects\aska\src\main\java\com\aska\core\CoreServiveApplication.java
+C:\Users\acer\IdeaProjects\aska\src\main\java\com\aska\core\model\Analysis.java
+C:\Users\acer\IdeaProjects\aska\src\main\java\com\aska\core\model\AnalysisAspect.java
+C:\Users\acer\IdeaProjects\aska\src\main\java\com\aska\core\model\BaseEntity.java
+C:\Users\acer\IdeaProjects\aska\src\main\java\com\aska\core\model\Project.java
+C:\Users\acer\IdeaProjects\aska\src\main\java\com\aska\core\model\User.java
+C:\Users\acer\IdeaProjects\aska\src\main\java\com\aska\core\repository\UserRepository.java
+C:\Users\acer\IdeaProjects\aska\src\main\java\com\aska\core\security\UserDetailsImpl.java
+C:\Users\acer\IdeaProjects\aska\src\main\java\com\aska\core\security\UserDetailsServiceImpl.java
+C:\Users\acer\IdeaProjects\aska\src\main\java\com\aska\core\service\UserService.java

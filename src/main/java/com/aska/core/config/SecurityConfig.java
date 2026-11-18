@@ -52,14 +52,12 @@ public class SecurityConfig {
 
             .logout(logout -> logout
                     .logoutUrl("/api/auth/logout")
-                    .deleteCookies("JSESSIONID")
                     .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK)));
         return http.build();
     }
 
     @Bean
-    AuthenticationManager authenticationManager(AppUserDetailsService detailsService, PasswordEncoder passwordEncoder) throws Exception {
-        AppAuthenticationProvider authenticationProvider = new AppAuthenticationProvider(detailsService, passwordEncoder);
+    AuthenticationManager authenticationManager(AppAuthenticationProvider authenticationProvider) throws Exception {
         ProviderManager providerManager = new ProviderManager(authenticationProvider);
         providerManager.setEraseCredentialsAfterAuthentication(false);
         return providerManager;

@@ -4,6 +4,7 @@ import com.aska.core.dto.ProjectRequest;
 import com.aska.core.dto.ProjectResponse;
 import com.aska.core.dto.ProjectUpdateRequest;
 import com.aska.core.dto.UserResponse;
+import com.aska.core.model.Marketplace;
 import com.aska.core.model.Project;
 import com.aska.core.model.User;
 import com.aska.core.repository.ProjectRepository;
@@ -53,6 +54,7 @@ public class ProjectService {
         Project project = new Project();
         project.setUser(user);
         project.setMarketplaceUrl(url);
+        project.setMarketplace(Marketplace.WILDBERRIES);
         project.setProductName(request.productName().trim());
         project.setImageUrl(isBlank(request.imageUrl()) ? null : request.imageUrl().trim());
         return ProjectResponse.from(projectRepository.save(project));

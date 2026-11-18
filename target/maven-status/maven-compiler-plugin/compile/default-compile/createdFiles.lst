@@ -1,0 +1,9 @@
+com\aska\core\repository\UserRepository.class
+com\aska\core\model\BaseEntity.class
+com\aska\core\model\Project$marketplace.class
+com\aska\core\model\User.class
+com\aska\core\model\Project.class
+com\aska\core\CoreServiveApplication.class
+com\aska\core\config\SecurityConfig.class
+com\aska\core\security\UserDetailsServiceImpl.class
+com\aska\core\model\User$tier.class
