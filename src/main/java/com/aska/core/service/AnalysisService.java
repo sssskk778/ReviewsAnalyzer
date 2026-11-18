@@ -1,13 +1,16 @@
 package com.aska.core.service;
 
+import com.aska.core.constants.AppConstants;
 import com.aska.core.dto.AnalysisDetailsResponse;
 import com.aska.core.dto.AnalysisResponse;
+import com.aska.core.dto.AnalysisTaskMessage;
 import com.aska.core.model.Analysis;
 import com.aska.core.model.AnalysisStatus;
 import com.aska.core.model.Project;
 import com.aska.core.repository.AnalysisRepository;
 import com.aska.core.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +25,7 @@ public class AnalysisService {
 
     private final ProjectRepository projectRepository;
     private final AnalysisRepository analysisRepository;
+    private final RabbitTemplate rabbitTemplate;
 
     private static final List<AnalysisStatus> ACTIVE = List.of(AnalysisStatus.PENDING, AnalysisStatus.PROCESSING);
 
@@ -39,6 +43,8 @@ public class AnalysisService {
         analysis.setCreatedAt(LocalDateTime.now());
         analysisRepository.save(analysis);
         // TODO: положить задачу {analysisId, projectId, url} в очередь Redis для Consumer service
+        AnalysisTaskMessage analysisTaskMessage = new AnalysisTaskMessage(analysis.getAnalysisId(),projectId, project.getMarketplaceUrl());
+        rabbitTemplate.convertAndSend(AppConstants.EXCHANGE_NAME, AppConstants.ROUTING_KEY, analysisTaskMessage);
         return AnalysisResponse.from(analysis);
     }
 
@@ -61,5 +67,7 @@ public class AnalysisService {
         return projectRepository.findByProjectIdAndUserEmail(projectId, email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
     }
+
+
 
 }

@@ -8,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -38,8 +39,14 @@ public class JWTTokenValidationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception exception) {
                 SecurityContextHolder.clearContext();
+                throw new BadCredentialsException("Invalid Token received!");
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        return request.getServletPath().equals("/api/auth/register") ||
+                request.getServletPath().equals("/api/auth/login");
     }
 }

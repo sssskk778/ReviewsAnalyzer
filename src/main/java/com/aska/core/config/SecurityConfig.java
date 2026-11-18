@@ -28,10 +28,11 @@ public class SecurityConfig {
 
         http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-            .csrf(csrf -> csrf.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+                .csrf(csrf -> csrf.disable())
+           /* .csrf(csrf -> csrf.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
                     .ignoringRequestMatchers("/api/auth/register", "/api/auth/login")
                     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-            )
+            )*/
             .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
             .addFilterBefore(new JWTTokenValidationFilter(), BasicAuthenticationFilter.class)
 
