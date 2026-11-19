@@ -13,7 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -42,9 +45,13 @@ public class AnalysisService {
         analysis.setStatus(AnalysisStatus.PENDING);
         analysis.setCreatedAt(LocalDateTime.now());
         analysisRepository.save(analysis);
-        // TODO: положить задачу {analysisId, projectId, url} в очередь Redis для Consumer service
         AnalysisTaskMessage analysisTaskMessage = new AnalysisTaskMessage(analysis.getAnalysisId(),projectId, project.getMarketplaceUrl());
-        rabbitTemplate.convertAndSend(AppConstants.EXCHANGE_NAME, AppConstants.ROUTING_KEY, analysisTaskMessage);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                rabbitTemplate.convertAndSend(AppConstants.EXCHANGE_NAME, AppConstants.ROUTING_KEY, analysisTaskMessage);
+            }
+        });
         return AnalysisResponse.from(analysis);
     }
 
