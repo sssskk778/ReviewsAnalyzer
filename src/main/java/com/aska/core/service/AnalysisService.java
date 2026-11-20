@@ -11,6 +11,7 @@ import com.aska.core.repository.AnalysisRepository;
 import com.aska.core.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionException;
@@ -29,6 +30,13 @@ public class AnalysisService {
     private final ProjectRepository projectRepository;
     private final AnalysisRepository analysisRepository;
     private final RabbitTemplate rabbitTemplate;
+
+    @Value("${app.rabbit.exchange}")
+    private String exchange;
+
+    @Value("${app.rabbit.task-routing-key}")
+    private String taskRoutingKey;
+
 
     private static final List<AnalysisStatus> ACTIVE = List.of(AnalysisStatus.PENDING, AnalysisStatus.PROCESSING);
 
@@ -49,7 +57,7 @@ public class AnalysisService {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
-                rabbitTemplate.convertAndSend(AppConstants.EXCHANGE_NAME, AppConstants.ROUTING_KEY, analysisTaskMessage);
+                rabbitTemplate.convertAndSend(exchange,taskRoutingKey, analysisTaskMessage);
             }
         });
         return AnalysisResponse.from(analysis);
