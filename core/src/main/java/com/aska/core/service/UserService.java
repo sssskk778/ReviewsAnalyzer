@@ -1,6 +1,5 @@
 package com.aska.core.service;
 
-import com.aska.core.constants.AppConstants;
 import com.aska.core.dto.RegisterRequest;
 import com.aska.core.exception.ConflictException;
 import com.aska.core.exception.UnauthorizedException;
@@ -10,6 +9,7 @@ import com.aska.core.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +25,11 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    @Value("${app.jwt.secret}")
+    private String jwtSecret;
+    @Value("${app.jwt.expiration-ms}")
+    private long jwtExpirationMs;
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -56,7 +61,7 @@ public class UserService {
     }
 
     public String generateJwtToken(Authentication authentication) {
-        SecretKey secretKey = Keys.hmacShaKeyFor(AppConstants.JWT_SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+        SecretKey secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
         return Jwts.builder()
                 .issuer("Aska")
                 .subject("JWT Token")
@@ -64,7 +69,7 @@ public class UserService {
                 .claim("authorities", authentication.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority).collect(Collectors.joining(",")))
                 .issuedAt(new Date())
-                .expiration(new Date(new Date().getTime() + AppConstants.JWT_EXPIRATION_MS))
+                .expiration(new Date(new Date().getTime() + jwtExpirationMs))
                 .signWith(secretKey)
                 .compact();
     }

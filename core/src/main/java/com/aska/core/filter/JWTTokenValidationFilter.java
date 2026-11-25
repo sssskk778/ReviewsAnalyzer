@@ -1,6 +1,7 @@
 package com.aska.core.filter;
 
 import com.aska.core.constants.AppConstants;
+import com.aska.core.exceptionhandling.CustomAuthenticationEntryPoint;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -20,6 +21,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class JWTTokenValidationFilter extends OncePerRequestFilter {
+
+    private final SecretKey secretKey;
+
+    public JWTTokenValidationFilter(String jwtSecret) {
+        this.secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -29,7 +37,6 @@ public class JWTTokenValidationFilter extends OncePerRequestFilter {
                 jwt = jwt.substring(AppConstants.JWT_PREFIX.length());
             }
             try {
-                SecretKey secretKey = Keys.hmacShaKeyFor(AppConstants.JWT_SECRET_KEY.getBytes(StandardCharsets.UTF_8));
                 Claims claims = Jwts.parser().verifyWith(secretKey)
                         .build().parseSignedClaims(jwt).getPayload();
                 String username = String.valueOf(claims.get("username"));
@@ -39,7 +46,8 @@ public class JWTTokenValidationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception exception) {
                 SecurityContextHolder.clearContext();
-                throw new BadCredentialsException("Получен недействительный токен!");
+                new CustomAuthenticationEntryPoint().commence(request, response, new BadCredentialsException("Получен недействительный токен!"));
+                return;
             }
         }
         filterChain.doFilter(request, response);

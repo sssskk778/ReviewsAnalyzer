@@ -5,6 +5,7 @@ import com.aska.core.exceptionhandling.CustomAuthenticationEntryPoint;
 import com.aska.core.filter.CsrfCookieFilter;
 import com.aska.core.filter.JWTTokenValidationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -15,18 +16,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     @Bean
-    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http, @Value("${app.jwt.secret}") String jwtSecret ) throws Exception {
 
         http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
@@ -36,7 +34,7 @@ public class SecurityConfig {
                     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             )*/
             .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
-            .addFilterBefore(new JWTTokenValidationFilter(), BasicAuthenticationFilter.class)
+            .addFilterBefore(new JWTTokenValidationFilter(jwtSecret), BasicAuthenticationFilter.class)
 
             .authorizeHttpRequests((requests) -> requests
                     .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
