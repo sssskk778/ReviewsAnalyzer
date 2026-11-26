@@ -1,10 +1,11 @@
-package com.aska.core.service;
+package com.aska.core.service.impl;
 
 import com.aska.core.dto.AnalysisResultMessage;
 import com.aska.core.model.Analysis;
 import com.aska.core.model.AnalysisAspect;
 import com.aska.core.enums.AnalysisStatus;
 import com.aska.core.repository.AnalysisRepository;
+import com.aska.core.service.IAnalysisResultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,11 +14,12 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class AnalysisResultService {
+public class AnalysisResultService implements IAnalysisResultService {
 
     private final AnalysisRepository analysisRepository;
 
     @Transactional
+    @Override
     public void apply(AnalysisResultMessage message){
         Analysis analysis = analysisRepository.findById(message.analysisId()).orElse(null);
         if(analysis == null){

@@ -1,7 +1,8 @@
-package com.aska.consumer.parser;
+package com.aska.consumer.parser.impl;
 
 import com.aska.consumer.dto.Review;
 import com.aska.consumer.exception.ParserException;
+import com.aska.consumer.parser.IReviewsParser;
 import com.microsoft.playwright.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ import java.util.regex.Pattern;
 
 @Component
 @Slf4j
-public class WildberriesParser {
+public class WildberriesParser implements IReviewsParser {
 
     private static final Pattern NM_ID = Pattern.compile("/catalog/(\\d+)");
     private static final int MAX_REVIEWS = 500;
@@ -23,6 +24,7 @@ public class WildberriesParser {
             + "(KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36";
     private JsonMapper mapper = new JsonMapper().builder().build();
 
+    @Override
     public List<Review> fetchReviews(String productUrl){
         long nmId = extractNmId(productUrl);
         String json = downloadReviewsJson(nmId);

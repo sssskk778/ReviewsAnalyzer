@@ -27,6 +27,7 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(requests -> requests
                     .requestMatchers("/error").permitAll()
+                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                     .requestMatchers("/api/**").authenticated()
                     .anyRequest().denyAll())
             .oauth2ResourceServer(oauth -> oauth

@@ -7,6 +7,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
@@ -18,8 +19,9 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         response.setStatus(HttpStatus.FORBIDDEN.value());
         response.setContentType("application/json;charset=UTF-8");
 
-        String jsonResponse = String.format("{\"status\": %d, \"message\": \"%s\", \"errors\": {}}",
-                HttpStatus.FORBIDDEN.value(), "Доступ запрещен");
+        String jsonResponse = String.format(
+                "{\"path\": \"%s\", \"status\": %d, \"message\": \"%s\", \"timestamp\": \"%s\", \"errors\": {}}",
+                request.getRequestURI(), HttpStatus.FORBIDDEN.value(), "Доступ запрещен", LocalDateTime.now());
 
         response.getWriter().write(jsonResponse);
     }

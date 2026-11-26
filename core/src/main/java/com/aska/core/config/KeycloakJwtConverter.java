@@ -1,7 +1,7 @@
 package com.aska.core.config;
 
 
-import com.aska.core.service.UserService;
+import com.aska.core.service.impl.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;

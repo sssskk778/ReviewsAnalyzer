@@ -1,4 +1,4 @@
-package com.aska.core.service;
+package com.aska.core.service.impl;
 
 import com.aska.core.dto.ProjectRequest;
 import com.aska.core.dto.ProjectResponse;
@@ -12,6 +12,7 @@ import com.aska.core.model.Project;
 import com.aska.core.model.User;
 import com.aska.core.repository.ProjectRepository;
 import com.aska.core.repository.UserRepository;
+import com.aska.core.service.IProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,7 @@ import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
-public class ProjectService {
+public class ProjectService implements IProjectService {
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
@@ -30,12 +31,14 @@ public class ProjectService {
 
 
     @Transactional(readOnly = true)
+    @Override
     public List<ProjectResponse> listProject(String email){
         List<Project> projects = projectRepository.findByUserEmailOrderByCreatedAtDesc(email);
         return projects.stream().map(ProjectResponse::from).toList();
     }
 
     @Transactional
+    @Override
     public ProjectResponse createProject(ProjectRequest request, String email){
         String url = request.marketplaceUrl().trim();
         if(!WILDBERRIES_URL.matcher(url).matches()){
@@ -57,12 +60,14 @@ public class ProjectService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public ProjectResponse getProject(Long id, String email) {
         return ProjectResponse.from(getOwned(id, email));
     }
 
 
     @Transactional
+    @Override
     public ProjectResponse updateProject(Long id, ProjectUpdateRequest request, String email) {
         Project existingProject = getOwned(id, email);
         existingProject.setProductName(request.productName().trim());
@@ -70,6 +75,7 @@ public class ProjectService {
         return ProjectResponse.from(projectRepository.save(existingProject));
     }
     @Transactional
+    @Override
     public void deleteProject(Long id, String email){
         projectRepository.delete(getOwned(id,email));
     }

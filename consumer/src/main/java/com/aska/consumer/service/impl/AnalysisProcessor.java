@@ -1,4 +1,4 @@
-package com.aska.consumer.service;
+package com.aska.consumer.service.impl;
 
 import com.aska.consumer.dto.AnalysisResultMessage;
 import com.aska.consumer.dto.AnalysisTaskMessage;
@@ -6,7 +6,9 @@ import com.aska.consumer.dto.LlmAnalysisResult;
 import com.aska.consumer.dto.Review;
 import com.aska.consumer.llm.ReviewAnalyzer;
 import com.aska.consumer.enums.AnalysisStatus;
-import com.aska.consumer.parser.WildberriesParser;
+import com.aska.consumer.parser.IReviewsParser;
+import com.aska.consumer.parser.impl.WildberriesParser;
+import com.aska.consumer.service.IAnalysisProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -18,7 +20,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AnalysisProcessor {
+public class AnalysisProcessor implements IAnalysisProcessor {
     private final RabbitTemplate rabbitTemplate;
     private final ReviewAnalyzer analyzer;
 
@@ -27,9 +29,9 @@ public class AnalysisProcessor {
     @Value("${app.rabbit.exchange}")
     private String exchange;
 
-    private final WildberriesParser parser;
+    private final IReviewsParser parser;
 
-
+    @Override
     public void process(AnalysisTaskMessage task){
         Long id = task.analysisId();
         log.info("Получена задача {}", task);

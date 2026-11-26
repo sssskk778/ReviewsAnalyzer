@@ -1,4 +1,4 @@
-package com.aska.core.service;
+package com.aska.core.service.impl;
 
 import com.aska.core.dto.AnalysisDetailsResponse;
 import com.aska.core.dto.AnalysisResponse;
@@ -10,6 +10,7 @@ import com.aska.core.enums.AnalysisStatus;
 import com.aska.core.model.Project;
 import com.aska.core.repository.AnalysisRepository;
 import com.aska.core.repository.ProjectRepository;
+import com.aska.core.service.IAnalysisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +24,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class AnalysisService {
+public class AnalysisService implements IAnalysisService {
 
     private final ProjectRepository projectRepository;
     private final AnalysisRepository analysisRepository;
@@ -39,6 +40,7 @@ public class AnalysisService {
     private static final List<AnalysisStatus> ACTIVE = List.of(AnalysisStatus.PENDING, AnalysisStatus.PROCESSING);
 
     @Transactional
+    @Override
     public AnalysisResponse createAnalysis(Long projectId, String email) {
         Project project = getOwnedProject(projectId, email);
 
@@ -63,6 +65,7 @@ public class AnalysisService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<AnalysisResponse> listAnalysis(Long projectId, String email){
         getOwnedProject(projectId, email);
         return analysisRepository.findByProjectProjectIdOrderByCreatedAtDesc(projectId)
@@ -70,6 +73,7 @@ public class AnalysisService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public AnalysisDetailsResponse detailsAnalysis(Long analysisId, String email){
         Analysis analysis = analysisRepository.findByAnalysisIdAndProjectUserEmail(analysisId, email)
                 .orElseThrow(() -> new NotFoundException("Анализ этого продукта не найден"));
