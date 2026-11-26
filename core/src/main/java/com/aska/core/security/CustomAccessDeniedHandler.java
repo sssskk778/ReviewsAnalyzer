@@ -1,6 +1,5 @@
-package com.aska.core.exceptionhandling;
+package com.aska.core.security;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;

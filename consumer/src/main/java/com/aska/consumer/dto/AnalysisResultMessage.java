@@ -1,6 +1,6 @@
 package com.aska.consumer.dto;
 
-import com.aska.consumer.model.AnalysisStatus;
+import com.aska.consumer.enums.AnalysisStatus;
 import java.util.List;
 
 public record AnalysisResultMessage(Long analysisId,

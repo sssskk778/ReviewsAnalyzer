@@ -1,4 +1,4 @@
-package com.aska.core.model;
+package com.aska.core.enums;
 
 public enum Marketplace {
     WILDBERRIES,

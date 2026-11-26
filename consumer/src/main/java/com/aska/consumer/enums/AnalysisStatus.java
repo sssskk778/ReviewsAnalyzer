@@ -1,4 +1,4 @@
-package com.aska.consumer.model;
+package com.aska.consumer.enums;
 
 public enum AnalysisStatus {
     PENDING,

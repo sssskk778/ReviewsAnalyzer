@@ -3,7 +3,7 @@ package com.aska.core.service;
 import com.aska.core.dto.AnalysisResultMessage;
 import com.aska.core.model.Analysis;
 import com.aska.core.model.AnalysisAspect;
-import com.aska.core.model.AnalysisStatus;
+import com.aska.core.enums.AnalysisStatus;
 import com.aska.core.repository.AnalysisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

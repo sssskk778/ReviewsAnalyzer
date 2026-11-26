@@ -6,7 +6,7 @@ import com.aska.core.dto.AnalysisTaskMessage;
 import com.aska.core.exception.ConflictException;
 import com.aska.core.exception.NotFoundException;
 import com.aska.core.model.Analysis;
-import com.aska.core.model.AnalysisStatus;
+import com.aska.core.enums.AnalysisStatus;
 import com.aska.core.model.Project;
 import com.aska.core.repository.AnalysisRepository;
 import com.aska.core.repository.ProjectRepository;

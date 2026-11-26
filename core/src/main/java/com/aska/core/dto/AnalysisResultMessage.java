@@ -1,6 +1,6 @@
 package com.aska.core.dto;
 
-import com.aska.core.model.AnalysisStatus;
+import com.aska.core.enums.AnalysisStatus;
 
 import java.util.List;
 

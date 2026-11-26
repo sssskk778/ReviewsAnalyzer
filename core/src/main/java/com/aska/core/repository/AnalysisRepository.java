@@ -1,7 +1,7 @@
 package com.aska.core.repository;
 
 import com.aska.core.model.Analysis;
-import com.aska.core.model.AnalysisStatus;
+import com.aska.core.enums.AnalysisStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;

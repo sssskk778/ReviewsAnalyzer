@@ -5,7 +5,7 @@ import com.aska.consumer.dto.AnalysisTaskMessage;
 import com.aska.consumer.dto.LlmAnalysisResult;
 import com.aska.consumer.dto.Review;
 import com.aska.consumer.llm.ReviewAnalyzer;
-import com.aska.consumer.model.AnalysisStatus;
+import com.aska.consumer.enums.AnalysisStatus;
 import com.aska.consumer.parser.WildberriesParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

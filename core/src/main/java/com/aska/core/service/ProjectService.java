@@ -7,7 +7,7 @@ import com.aska.core.exception.BadRequestException;
 import com.aska.core.exception.ConflictException;
 import com.aska.core.exception.NotFoundException;
 import com.aska.core.exception.UnauthorizedException;
-import com.aska.core.model.Marketplace;
+import com.aska.core.enums.Marketplace;
 import com.aska.core.model.Project;
 import com.aska.core.model.User;
 import com.aska.core.repository.ProjectRepository;

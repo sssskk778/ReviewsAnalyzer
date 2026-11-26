@@ -1,6 +1,6 @@
 package com.aska.core.dto;
 
-import com.aska.core.model.Tier;
+import com.aska.core.enums.Tier;
 import com.aska.core.model.User;
 
 public record UserResponse(Long id, String email, String name, Tier tier) {

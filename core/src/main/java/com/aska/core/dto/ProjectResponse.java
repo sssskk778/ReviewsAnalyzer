@@ -1,6 +1,6 @@
 package com.aska.core.dto;
 
-import com.aska.core.model.Marketplace;
+import com.aska.core.enums.Marketplace;
 import com.aska.core.model.Project;
 
 import java.time.LocalDateTime;

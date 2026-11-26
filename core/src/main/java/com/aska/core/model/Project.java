@@ -1,5 +1,6 @@
 package com.aska.core.model;
 
+import com.aska.core.enums.Marketplace;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,12 +1,10 @@
 package com.aska.core.model;
 
+import com.aska.core.enums.Tier;
 import jakarta.persistence.*;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.HashSet;
-import java.util.Set;
 
 
 @Entity
@@ -21,9 +19,6 @@ public class User extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
-    private String password;
-
     private String name;
 
     @Enumerated(EnumType.STRING)
@@ -31,12 +26,4 @@ public class User extends BaseEntity {
     private Tier tier = Tier.FREE;
 
     private boolean active = true;
-
-    /*@OneToMany(mappedBy = "user", cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER, targetEntity = Project.class)
-    private Set<Project> projects;*/
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<Authority> authorities = new HashSet<>();
-
 }
